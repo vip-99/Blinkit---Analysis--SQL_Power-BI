@@ -241,25 +241,21 @@ LIMIT 5;
 
 ## Findings
 
-**Total Sales Volume**: The total sales amount is in the millions, showcasing significant transaction activity across Blinkit outlets.
+► **Total Sales Volume**: The total sales amount is in the millions, showcasing significant transaction activity across Blinkit outlets.
 
-**Product & Outlet Diversity**: The dataset contains a variety of unique items and outlets, emphasizing a diverse product and store mix.
+► **Product & Outlet Diversity**: The dataset contains a variety of unique items and outlets, emphasizing a diverse product and store mix.
 
-**Sales Performance by Fat Content**: Regular and Low Fat items contribute significantly to total sales, with noticeable variations across outlet locations.
+► **Sales Performance by Fat Content**: Regular and Low Fat items contribute significantly to total sales, with noticeable variations across outlet locations.
 
-**Top-Selling Item Types**: Certain item types outperform others in total revenue, highlighting consumer preferences for specific product categories.
+► **Top-Selling Item Types**: Certain item types outperform others in total revenue, highlighting consumer preferences for specific product categories.
 
-**Impact of Outlet Location & Size**: Sales vary by outlet location type, with urban and high-traffic locations generating more revenue, and Larger outlets contribute a higher percentage of total sales, reinforcing their importance in revenue generation
+► **Impact of Outlet Location & Size**: Sales vary by outlet location type, with urban and high-traffic locations generating more revenue, and Larger outlets contribute a higher percentage of total sales, reinforcing their importance in revenue generation
 
-**Sales Trends by Establishment Year**: Older outlets tend to have higher sales, suggesting a strong customer base and brand loyalty.
+► **Sales Trends by Establishment Year**: Older outlets tend to have higher sales, suggesting a strong customer base and brand loyalty.
 
-**Outlet Type Insights**: Supermarkets outperform smaller outlets in both sales volume and customer engagement, and Outlet type also influences item visibility, impacting product reach and purchase behavior.
+► **Outlet Type Insights**: Supermarkets outperform smaller outlets in both sales volume and customer engagement, and Outlet type also influences item visibility, impacting product reach and purchase behavior.
 
-**Top-Performing Outlets**: The top 5 outlets generate the highest revenue, indicating possible strategic advantages such as location, pricing, or customer preferences.
-
-
-
-
+► **Top-Performing Outlets**: The top 5 outlets generate the highest revenue, indicating possible strategic advantages such as location, pricing, or customer preferences.
 
 
 
