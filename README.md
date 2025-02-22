@@ -26,10 +26,10 @@ The table structure includes columns for transaction Item Fat Content,Item Ident
 
 
 ```sql
-create database blinkit
+CREATE DATABASE blinkit
 use blinkit
 
-CREATE TABLE blinkit (
+CREATE TABLE Blinkit (
     Item_Fat_Content VARCHAR(50),
     Item_Identifier VARCHAR(50) PRIMARY KEY,
     Item_Type VARCHAR(100),
@@ -69,25 +69,25 @@ SELECT * FROM Blinkit
 ```
 
 
-1 **How many total sales we have**?
+1 **How many total sales we have in Millions**?
 
 ```sql
-SELECT COUNT(*) AS total_sales From retail_sales;
+SELECT CONCAT(CAST(SUM(Total_Sales) / 1000000 AS DECIMAL(10,1)), 'M') AS Total_Sales_Millions FROM Blinkit
 ```
 
 
 
-2 **How many unique Customers we have**?
+2 **How many unique Items we have**?
 
 ```sql
-SELECT COUNT(DISTINCT customer_id) AS total_customers From retail_sales;
+SELECT COUNT(*) AS No_Of_Items FROM Blinkit
 ```
 
 
-3 **How many unique Category we have**?
+3 **How many unique Outlet_Identifie we have**?
 
 ```sql
-SELECT category FROM retail_sales;
+SELECT COUNT(DISTINCT outlet_identifier) FROM Blinkit;
 ```
 
 
@@ -98,127 +98,143 @@ SELECT category FROM retail_sales;
 The following SQL queries were developed to answer specific business questions:
 
 
-1 **Write a SQL query to retrieve all columns for sales made on '2022-11-05'**?
+1 **What is the average sales'**?
 
 ```sql
-SELECT * FROM retail_sales WHERE sale_date='2022-11-05';
+SELECT CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales FROM Blinkit;
 ```
 
 
 	
-2  **Write a SQL query to retrieve all transactions where the category is 'Clothing' and the quantity sold is more than 4 in the month of Nov-2022**?
+2  **What is the average rating of all items**?
 
 ```sql
-SELECT * FROM retail_sales 
-WHERE category='Clothing' 
-	AND quantity>=4 
-	AND to_char(sale_date,'mm-yyyy')='11-2022';
+SELECT CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating FROM Blinkit;
 ```
 
 
 
-3 **Write a SQL query to calculate the total sales (total_sale) for each category**?
+3 **What is the total sales, average sales, number of items, and average rating for each Item_Fat_Content type**?
 
 ```sql
-SELECT category,SUM(total_sale) AS total_sales 
-FROM retail_sales 
-GROUP BY category
-ORDER BY total_sales DESC;
+SELECT Item_Fat_Content,
+       CONCAT(CAST(SUM(Total_Sales) / 1000 AS DECIMAL(10,1)), 'K') AS Total_Sales_Thousand, 
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Item_Fat_Content
+ORDER BY Total_Sales_Thousand DESC;
 ```
 
 
 
-4 **Write a SQL query to find the average age of customers who purchased items from the 'Beauty' category**?
+4 **What is the total sales, average sales, number of items, and average rating for each Item_Type**?
 
 ```sql
-SELECT ROUND(AVG(age)::NUMERIC ,1) AS average_age 
-FROM retail_sales 
-WHERE category='Beauty'
-ORDER BY average_age DESC;
+SSELECT Item_Type,
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales, 
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Item_Type
+ORDER BY Total_Sales DESC;
 ```
 
 
 
-5  **Write a SQL query to find all transactions where the total_sale is greater than 1000**?
+5  **What is the total sales, average sales, number of items, and average rating for each combination of Outlet_Location_Type and Item_Fat_Content**?
 
 ```sql
-SELECT * FROM retail_sales WHERE total_sale >1000;
+SELECT Outlet_Location_Type, Item_Fat_Content,
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales, 
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Outlet_Location_Type, Item_Fat_Content
+ORDER BY Total_Sales DESC;
 ```
 
 
 
-6 **Write a SQL query to find the total number of transactions (transaction_id) made by each gender in each category**?
+6 **What is the total sales for Low Fat and Regular items in each Outlet_Location_Type**?
 
 ```sql
-SELECT category,gender,COUNT(transactions_id) AS num_of_transactions 
-FROM retail_sales 
-GROUP BY category,gender
-ORDER BY category DESC;
+SELECT Outlet_Location_Type, 
+       COALESCE(SUM(CASE WHEN Item_Fat_Content = 'Low Fat' THEN Total_Sales END), 0) AS Low_Fat,
+       COALESCE(SUM(CASE WHEN Item_Fat_Content = 'Regular' THEN Total_Sales END), 0) AS Regular
+FROM Blinkit
+GROUP BY Outlet_Location_Type
+ORDER BY Outlet_Location_Type;
 ```
 
 
 
-7 **Write a SQL query to calculate the average sale for each month. Find out best selling month in each year**?
+7 **What is the total sales, average sales, number of items, and average rating for each Outlet_Establishment_Year**?
 
 ```sql
-WITH best_selling_year AS (
-	
-SELECT to_char(sale_date,'MONTH') AS month ,to_char(sale_date,'YYYY') AS year,
-ROUND(AVG(total_sale)::NUMERIC ,1) AS avg_sale,
-RANK()OVER(PARTITION BY to_char(sale_date,'YYYY')  ORDER BY AVG(total_sale) DESC) AS rn
-FROM retail_sales
-GROUP BY 1,2
-	)
-SELECT year,month,avg_sale FROM best_selling_year WHERE rn=1;
+SELECT Outlet_Establishment_Year, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Outlet_Establishment_Year
+ORDER BY Outlet_Establishment_Year ASC;
 ```
 
 
 
 
-8 **Write a SQL query to find the top 5 customers based on the highest total sales**?
+8 **What is the total sales and percentage contribution of each Outlet_Size**?
 
 ```sql
-SELECT customer_id AS customer,SUM(total_sale) AS total_sales 
-FROM retail_sales
-GROUP BY customer_id
-ORDER BY total_sales DESC
+SELECT Outlet_Size, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CONCAT(CAST(SUM(Total_Sales) * 100.0 / SUM(SUM(Total_Sales)) OVER () AS DECIMAL(10,1)), '%') AS Percentage_Size
+FROM Blinkit
+GROUP BY Outlet_Size
+ORDER BY Percentage_Size DESC
+```
+
+
+9 **What is the total sales, percentage contribution, average sales, number of items, and average rating for each Outlet_Location_Type**?
+```sql
+SELECT Outlet_Location_Type, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CONCAT(CAST(SUM(Total_Sales) * 100.0 / SUM(SUM(Total_Sales)) OVER () AS DECIMAL(10,1)), '%') AS Percentage_Type,
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Outlet_Location_Type
+ORDER BY Total_Sales DESC;
+```
+
+10 **What is the total sales, average sales, number of items, average rating, and average item visibility for each Outlet_Type**?
+```sql
+SELECT Outlet_Type, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating,
+       CAST(AVG(Item_Visibility) AS DECIMAL(10,2)) AS Avg_Item_Visibility
+FROM Blinkit
+GROUP BY Outlet_Type
+ORDER BY Total_Sales DESC;
+```
+
+
+11 **Top 5 Outlets by Sales**?
+```sql
+SELECT Outlet_Identifier,
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales  
+FROM sales_data 
+GROUP BY Outlet_Identifier 
+ORDER BY Total_Sales DESC 
 LIMIT 5;
-```
-
-
-9 **Write a SQL query to find the number of unique customers who purchased items from each category**?
-```sql
-SELECT category,COUNT(DISTINCT customer_id) AS count_of_unique_customers 
-FROM retail_sales
-GROUP BY category
-ORDER BY num_of_unique_customers DESC;
-```
-
-10 **Write a SQL query to create each shift and number of orders**?
-(Example Morning <12, Afternoon Between 12 & 17, Evening >17)
-
-```sql
-WITH shifts AS (	
-	
-SELECT * ,
-  CASE
-     WHEN EXTRACT(HOUR FROM sale_time)<12 THEN 'morning'
-     WHEN EXTRACT(HOUR FROM sale_time) BETWEEN 12 AND 17 THEN 'afternoon'
-     ELSE 'evening'
-END AS shift 
-FROM retail_sales
-	)
-SELECT COUNT(*),shift FROM shifts GROUP BY shift;
-```
-
-
-11 **which Category has highest Cost of goods sold (COGS)**?
-
-```sql
-SELECT category,ROUND(SUM(cogs):: NUMERIC,1) AS total_cogs 
-FROM retail_sales
-GROUP BY category
-ORDER BY total_cogs DESC;
 ```
 
 
@@ -232,7 +248,7 @@ ORDER BY total_cogs DESC;
 
 ## Conclusion
 
-This project introducing SQL for data analysts, covering setup, cleaning, analysis, and business-driven queries to inform sales, customer, and product decisions.
+This Blinkit sales analysis project showcases SQL skills in data cleaning, EDA, and business insights to optimize sales and customer strategies.
 
 
 ## Author - Vipin Karunakaran
