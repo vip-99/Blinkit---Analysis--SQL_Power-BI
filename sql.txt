@@ -1,0 +1,109 @@
+1. Retrieve all data from the Blinkit table
+SELECT * FROM Blinkit;
+
+2. Standardize Item_Fat_Content values
+UPDATE Blinkit
+SET Item_Fat_Content = 
+    CASE 
+        WHEN Item_Fat_Content IN ('LF', 'low fat') THEN 'Low Fat'
+        WHEN Item_Fat_Content = 'reg' THEN 'Regular'
+        ELSE Item_Fat_Content
+    END;
+
+3. What is the total sales in millions?
+SELECT CONCAT(CAST(SUM(Total_Sales) / 1000000 AS DECIMAL(10,1)), 'M') AS Total_Sales_Millions FROM Blinkit;
+
+4. What is the average sales?
+SELECT CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales FROM Blinkit;
+
+5. How many unique items are present in the dataset?
+SELECT COUNT(*) AS No_Of_Items FROM Blinkit;
+
+6. What is the average rating of all items?
+SELECT CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating FROM Blinkit;
+
+7. What is the total sales, average sales, number of items, and average rating for each Item_Fat_Content type?
+SELECT Item_Fat_Content,
+       CONCAT(CAST(SUM(Total_Sales) / 1000 AS DECIMAL(10,1)), 'K') AS Total_Sales_Thousand, 
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Item_Fat_Content
+ORDER BY Total_Sales_Thousand DESC;
+
+8. What is the total sales, average sales, number of items, and average rating for each Item_Type?
+SELECT Item_Type,
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales, 
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Item_Type
+ORDER BY Total_Sales DESC;
+
+9. What is the total sales, average sales, number of items, and average rating for each combination of Outlet_Location_Type and Item_Fat_Content?
+SELECT Outlet_Location_Type, Item_Fat_Content,
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales, 
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Outlet_Location_Type, Item_Fat_Content
+ORDER BY Total_Sales DESC;
+
+10. What is the total sales for Low Fat and Regular items in each Outlet_Location_Type?
+SELECT Outlet_Location_Type, 
+       COALESCE(SUM(CASE WHEN Item_Fat_Content = 'Low Fat' THEN Total_Sales END), 0) AS Low_Fat,
+       COALESCE(SUM(CASE WHEN Item_Fat_Content = 'Regular' THEN Total_Sales END), 0) AS Regular
+FROM Blinkit
+GROUP BY Outlet_Location_Type
+ORDER BY Outlet_Location_Type;
+
+11. What is the total sales, average sales, number of items, and average rating for each Outlet_Establishment_Year?
+SELECT Outlet_Establishment_Year, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Outlet_Establishment_Year
+ORDER BY Outlet_Establishment_Year ASC;
+
+12. What is the total sales and percentage contribution of each Outlet_Size?
+SELECT Outlet_Size, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CONCAT(CAST(SUM(Total_Sales) * 100.0 / SUM(SUM(Total_Sales)) OVER () AS DECIMAL(10,1)), '%') AS Percentage_Size
+FROM Blinkit
+GROUP BY Outlet_Size
+ORDER BY Percentage_Size DESC;
+
+13. What is the total sales, percentage contribution, average sales, number of items, and average rating for each Outlet_Location_Type?
+SELECT Outlet_Location_Type, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CONCAT(CAST(SUM(Total_Sales) * 100.0 / SUM(SUM(Total_Sales)) OVER () AS DECIMAL(10,1)), '%') AS Percentage_Type,
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating
+FROM Blinkit
+GROUP BY Outlet_Location_Type
+ORDER BY Total_Sales DESC;
+
+14. What is the total sales, average sales, number of items, average rating, and average item visibility for each Outlet_Type?
+SELECT Outlet_Type, 
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales,
+       CAST(AVG(Total_Sales) AS DECIMAL(10,1)) AS Avg_Sales,
+       COUNT(*) AS No_Of_Items,
+       CAST(AVG(Rating) AS DECIMAL(10,2)) AS Avg_Rating,
+       CAST(AVG(Item_Visibility) AS DECIMAL(10,2)) AS Avg_Item_Visibility
+FROM Blinkit
+GROUP BY Outlet_Type
+ORDER BY Total_Sales DESC;
+
+15. Top 5 Outlets by Sales?
+SELECT Outlet_Identifier,
+       CAST(SUM(Total_Sales) AS DECIMAL(10,1)) AS Total_Sales  
+FROM sales_data 
+GROUP BY Outlet_Identifier 
+ORDER BY Total_Sales DESC 
+LIMIT 5;
