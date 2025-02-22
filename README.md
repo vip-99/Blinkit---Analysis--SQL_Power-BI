@@ -23,52 +23,40 @@ The table structure includes columns for transaction Item Fat Content,Item Ident
 
 
 
-```sql
-CREATE DATABASE retail_sales;
 
-CREATE TABLE retail_sales
-(
-    transactions_id INT PRIMARY KEY,
-    sale_date DATE,	
-    sale_time TIME,
-    customer_id INT,	
-    gender VARCHAR(10),
-    age INT,
-    category VARCHAR(35),
-    quantity INT,
-    price_per_unit FLOAT,	
-    cogs FLOAT,
-    total_sale FLOAT
+
+```sql
+create database blinkit
+use blinkit
+
+CREATE TABLE blinkit (
+    Item_Fat_Content VARCHAR(50),
+    Item_Identifier VARCHAR(50) PRIMARY KEY,
+    Item_Type VARCHAR(100),
+    Outlet_Establishment_Year INT,
+    Outlet_Identifier VARCHAR(50),
+    Outlet_Location_Type VARCHAR(50),
+    Outlet_Size VARCHAR(50),
+    Outlet_Type VARCHAR(50),
+    Item_Visibility DECIMAL(10,4),
+    Item_Weight DECIMAL(10,2),
+    Total_Sales DECIMAL(12,2),
+    Rating DECIMAL(5,2)
 );
 ```
 
 ### 2. Data Exploration & Cleaning
 
-**Record Count**: Determine the total number of records in the dataset.
-**Customer Count**: Find out how many unique customers are in the dataset.
-**Category Count**: Identify all unique product categories in the dataset.
-**Null Value Check**: Check for any null values in the dataset and delete records with missing data.
+**Clean Value**: Standardize Item_Fat_Content values.
 
 ```sql
-SELECT COUNT(*) FROM retail_sales;
-SELECT COUNT(DISTINCT customer_id) FROM retail_sales;
-SELECT DISTINCT category FROM retail_sales;
-
-SELECT * FROM retail_sales
-WHERE
-      transactions_id IS NULL OR sale_date IS NULL OR
-      sale_time IS NULL OR customer_id IS NULL OR 
-      gender IS NULL OR age IS NULL OR category IS NULL OR
-      quantity IS NULL OR price_per_unit IS NULL OR
-      cogs IS NULL OR toal IS NULL;
-
-DELETE FROM retail_sales
-WHERE 
-      transactions_id IS NULL OR sale_date IS NULL OR
-      sale_time IS NULL OR customer_id IS NULL OR 
-      gender IS NULL OR age IS NULL OR category IS NULL OR
-      quantity IS NULL OR price_per_unit IS NULL OR
-      cogs IS NULL OR toal IS NULL;
+UPDATE Blinkit
+SET Item_Fat_Content = 
+    CASE 
+        WHEN Item_Fat_Content IN ('LF', 'low fat') THEN 'Low Fat'
+        WHEN Item_Fat_Content = 'reg' THEN 'Regular'
+        ELSE Item_Fat_Content
+    END;
 
 ```
 
@@ -76,7 +64,8 @@ WHERE
 
 
 ```sql
-SELECT * FROM retail_sales;
+Retrieve all data from the Blinkit table
+SELECT * FROM Blinkit
 ```
 
 
